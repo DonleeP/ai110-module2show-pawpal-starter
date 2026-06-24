@@ -1,0 +1,50 @@
+classDiagram
+    class Owner {
+        +String id
+        +String name
+        +String email
+        +String phone
+        +List~Pet~ pets
+        +addPet(pet Pet) void
+        +removePet(petId String) void
+        +viewSchedule() List~Task~
+    }
+
+    class Pet {
+        +String id
+        +String name
+        +String species
+        +String breed
+        +int age
+        +String ownerId
+        +List~Task~ tasks
+        +addTask(task Task) void
+        +getUpcomingTasks() List~Task~
+    }
+
+    class Task {
+        +String id
+        +String title
+        +String description
+        +TaskType type
+        +DateTime dueDate
+        +boolean recurring
+        +boolean completed
+        +String petId
+        +markComplete() void
+        +reschedule(newDate DateTime) void
+        +isOverdue() boolean
+    }
+
+    class Scheduler {
+        +List~Task~ tasks
+        +scheduleTask(task Task) void
+        +cancelTask(taskId String) void
+        +getTasksForDay(date DateTime) List~Task~
+        +getOverdueTasks() List~Task~
+        +sendReminder(task Task) void
+    }
+
+    Owner "1" --> "*" Pet : owns
+    Pet "1" --> "*" Task : has
+    Scheduler "1" o-- "*" Task : manages

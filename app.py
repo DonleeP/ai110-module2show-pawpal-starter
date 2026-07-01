@@ -2,7 +2,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from pawpal_system import Owner, Pet, Task, TaskType
+from pawpal_system import Owner, Pet, Scheduler, Task, TaskType
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
 
@@ -120,16 +120,67 @@ else:
 st.divider()
 
 st.subheader("Build Schedule")
-st.caption("This button should call your scheduling logic once you implement it.")
+st.caption("Sorted, conflict-checked, and filterable — powered by the Scheduler class.")
+
+# Let the owner narrow the view before generating the plan.
+fcol1, fcol2 = st.columns(2)
+with fcol1:
+    pet_filter = st.selectbox(
+        "Show tasks for", ["All pets"] + [p.name for p in owner.pets]
+    )
+with fcol2:
+    status_filter = st.selectbox("Status", ["All", "Upcoming", "Completed"])
 
 if st.button("Generate schedule"):
-    # Pull every task across the owner's pets and order it by time.
-    schedule = sorted(owner.view_schedule(), key=lambda t: t.due_date)
+    # Load every task across the owner's pets into a Scheduler, then let the
+    # Scheduler do the sorting, filtering, and conflict detection.
+    scheduler = Scheduler()
+    for t in owner.view_schedule():
+        scheduler.schedule_task(t)
+
+    pet_by_id = {p.id: p.name for p in owner.pets}
+
+    # Translate the UI filters into Scheduler.filter_tasks arguments.
+    filter_kwargs: dict = {}
+    if pet_filter != "All pets":
+        filter_kwargs["pet_id"] = next(p.id for p in owner.pets if p.name == pet_filter)
+    if status_filter == "Upcoming":
+        filter_kwargs["completed"] = False
+    elif status_filter == "Completed":
+        filter_kwargs["completed"] = True
+
+    allowed_ids = {t.id for t in scheduler.filter_tasks(**filter_kwargs)}
+    # Keep Scheduler's chronological order, but only the tasks that pass filters.
+    schedule = [t for t in scheduler.sort_by_time() if t.id in allowed_ids]
+
     if not schedule:
-        st.warning("No tasks to schedule yet. Add a task above first.")
+        st.warning("No tasks match this view. Add a task or widen the filters above.")
     else:
-        pet_by_id = {p.id: p.name for p in owner.pets}
-        st.write(f"Today's Schedule for {owner.name}:")
-        for t in schedule:
-            who = pet_by_id.get(t.pet_id, t.pet_id)
-            st.write(f"- **{t.due_date.strftime('%H:%M')}**  {who}: {t.title} ({t.type.value})")
+        # Surface conflicts first — they're the most important thing for the
+        # owner to see and act on.
+        conflicts = scheduler.detect_conflicts(pet_names=pet_by_id)
+        if conflicts:
+            st.warning(
+                f"⚠️ {len(conflicts)} scheduling conflict"
+                f"{'s' if len(conflicts) > 1 else ''} found — "
+                "two tasks want the same time slot. Consider rescheduling one:"
+            )
+            for c in conflicts:
+                # Strip the "WARNING: " prefix; Streamlit's icon already signals it.
+                st.warning(c.replace("WARNING: ", ""), icon="⏰")
+        else:
+            st.success("✅ No scheduling conflicts — this plan is clear to go!")
+
+        st.write(f"#### Today's Schedule for {owner.name}")
+        st.table(
+            [
+                {
+                    "Time": t.due_date.strftime("%H:%M"),
+                    "Pet": pet_by_id.get(t.pet_id, t.pet_id),
+                    "Task": t.title,
+                    "Type": t.type.value,
+                    "Status": "✓ done" if t.completed else "upcoming",
+                }
+                for t in schedule
+            ]
+        )

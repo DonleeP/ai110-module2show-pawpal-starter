@@ -35,13 +35,16 @@ No, my design didnt change during implementation
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+I used AI all throughout the process of this project, mainly when the assignment mentioned talking to the AI agent and making the changes the AI offered if they were good. I made sure to use "Ask before edits".
 - What kinds of prompts or questions were most helpful?
+The most helpful questions were like "Based on my skeletons in pawpal_system.py, how should the Scheduler retrieve all tasks from the Owner's pets?"
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
+One moment I didn't accept a change AI suggested was when it wanted to go deeper and make the option for the conflict scheduler would look deeper than just if two things started at the same time.
 - How did you evaluate or verify what the AI suggested?
-
+Looking at the code before granting it access to make changes. And if I wasn't sure I would decline.
 ---
 
 ## 4. Testing and Verification
@@ -49,13 +52,14 @@ No, my design didnt change during implementation
 **a. What you tested**
 
 - What behaviors did you test?
-- Why were these tests important?
+I tested behaviors like Sorting Correctness, Recurrence Logic, and Conflict Detection.
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
+4- pretty confident
 - What edge cases would you test next if you had more time?
-
+nulls? I don't know
 ---
 
 ## 5. Reflection
@@ -63,11 +67,14 @@ No, my design didnt change during implementation
 **a. What went well**
 
 - What part of this project are you most satisfied with?
+adding pets to owners
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
+conflicting tasks
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+Taking advantage of AI to make test cases.

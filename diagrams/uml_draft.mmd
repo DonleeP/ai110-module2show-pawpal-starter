@@ -28,10 +28,12 @@ classDiagram
         +String description
         +TaskType type
         +DateTime dueDate
-        +boolean recurring
-        +boolean completed
         +String petId
-        +markComplete() void
+        +Frequency frequency
+        +boolean completed
+        +boolean recurring$
+        +markComplete() Task
+        +nextOccurrence() Task
         +reschedule(newDate DateTime) void
         +isOverdue() boolean
     }
@@ -40,11 +42,35 @@ classDiagram
         +List~Task~ tasks
         +scheduleTask(task Task) void
         +cancelTask(taskId String) void
+        +completeTask(taskId String) Task
+        +sortByTime() List~Task~
+        +detectConflicts(petNames Map) List~String~
+        +filterTasks(completed bool, petId String) List~Task~
         +getTasksForDay(date DateTime) List~Task~
         +getOverdueTasks() List~Task~
         +sendReminder(task Task) void
     }
 
+    class TaskType {
+        <<enumeration>>
+        FEEDING
+        WALK
+        VET
+        GROOMING
+        MEDICATION
+    }
+
+    class Frequency {
+        <<enumeration>>
+        DAILY
+        WEEKLY
+        +delta() timedelta
+    }
+
     Owner "1" --> "*" Pet : owns
     Pet "1" --> "*" Task : has
     Scheduler "1" o-- "*" Task : manages
+    Task --> TaskType : typed as
+    Task --> "0..1" Frequency : repeats
+    Task ..> Task : creates next
+    Scheduler ..> Task : schedules next

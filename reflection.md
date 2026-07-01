@@ -7,12 +7,14 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+My initial UML design includes Owner, Pet, Scheduler, and Task. Owner owns Pet relationship, Pet has Task relationship, and Scheduler manages Task relationship. Owner has an id,name,email,phone, and pets... Pet has id,name,species,breed,age,ownerId, and tasks... Scheduler has tasks... and Task has id,title,description,type,dueDate,recurring,completed,petId.
+
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
----
+No, my design didnt change during implementation
 
 ## 2. Scheduling Logic and Tradeoffs
 

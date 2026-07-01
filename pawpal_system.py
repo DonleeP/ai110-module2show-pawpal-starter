@@ -36,15 +36,15 @@ class Task:
 
     def mark_complete(self) -> None:
         """Mark this task as done."""
-        raise NotImplementedError
+        self.completed = True
 
     def reschedule(self, new_date: datetime) -> None:
         """Move this task to a new due date."""
-        raise NotImplementedError
+        self.due_date = new_date
 
     def is_overdue(self) -> bool:
         """Return True if the task is past due and not completed."""
-        raise NotImplementedError
+        return not self.completed and self.due_date < datetime.now()
 
 
 @dataclass
@@ -61,11 +61,11 @@ class Pet:
 
     def add_task(self, task: Task) -> None:
         """Attach a care task to this pet."""
-        raise NotImplementedError
+        self.tasks.append(task)
 
     def get_upcoming_tasks(self) -> list[Task]:
         """Return this pet's tasks that are not yet completed."""
-        raise NotImplementedError
+        return [task for task in self.tasks if not task.completed]
 
 
 class Owner:
@@ -80,15 +80,15 @@ class Owner:
 
     def add_pet(self, pet: Pet) -> None:
         """Add a pet to this owner."""
-        raise NotImplementedError
+        self.pets.append(pet)
 
     def remove_pet(self, pet_id: str) -> None:
         """Remove a pet by id."""
-        raise NotImplementedError
+        self.pets = [pet for pet in self.pets if pet.id != pet_id]
 
     def view_schedule(self) -> list[Task]:
         """Return all tasks across this owner's pets."""
-        raise NotImplementedError
+        return [task for pet in self.pets for task in pet.tasks]
 
 
 class Scheduler:

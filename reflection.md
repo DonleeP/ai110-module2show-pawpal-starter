@@ -28,7 +28,7 @@ No, my design didnt change during implementation
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
----
+--- detect_conflicts() only flags tasks that share the exact same start time, not overlapping durations.
 
 ## 3. AI Collaboration
 
